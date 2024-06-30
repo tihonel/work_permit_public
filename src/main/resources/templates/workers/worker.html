@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Сотрудник</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <style>
+        .right-text {
+            text-align: right;
+        }
+        .left-text {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<br/>
+    <div id="divMain">
+        <form th:method="GET" th:action="@{/workers/{id}/update(id=${worker.getId()})}">
+            <input type="submit" value="Изменить">
+        </form>
+        <br/>
+    <table id="workerTable">
+        <tr>
+            <td class="right-text">Ф.И.О</td>
+            <td  class="left-text" th:text="${worker.getName()}"></td>
+        </tr>
+        <tr>
+            <td class="right-text">Группа допуска</td>
+            <td class="left-text" th:text="${worker.getAccessGroup()}"></td>
+        </tr>
+        <tr>
+            <td class="right-text">Оперативные права</td>
+            <td  class="left-text">
+                <div th:if="${worker.isOperationalRights()}">Есть</div>
+                <div th:if="${!worker.isOperationalRights()}">Нет</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="right-text">Право выдачи</td>
+            <td  class="left-text">
+                <div th:if="${worker.isRightIssuing()}">Есть</div>
+                <div th:if="${!worker.isRightIssuing()}">Нет</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="right-text">Водитель</td>
+            <td  class="left-text">
+                <div th:if="${worker.isDriver()}">Да</div>
+                <div th:if="${!worker.isDriver()}">Нет</div>
+            </td>
+        </tr>
+    </table>
+    <br>
+        <form th:method="POST" th:action="@{/workers/{id}/delete(id=${worker.getId()})}" onsubmit="return confirmDelete()">
+            <input type="submit" value="Удалить">
+        </form>
+    </div>
+</body>
+<script>
+    function confirmDelete() {
+        if(confirm("Вы уверены, что хотите удалить?")){
+            return true;
+        }
+        return false;
+    }
+</script>
+</html>

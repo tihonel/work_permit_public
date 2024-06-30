@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Наряд</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <style>
+        .right-text {
+            text-align: right;
+        }
+        .left-text {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="headerContainer" th:include="header.html"></div>
+    <br/>
+    <div id = "divMain">
+        <form th:method="POST" th:action="@{/work_permits/{id}/delete(id=${simpleDtoWorkPermit.getId()})}">
+            <input type="submit" value="Удалить" onclick="return confirmDeleteWorkPermit()">
+        </form>
+        <table id="workPermitTable">
+            <caption th:text="'Наряд-допуск №'+ ${simpleDtoWorkPermit.number}"></caption>
+            <colgroup>
+                <col span="1" style="width: 30%;">
+            </colgroup>
+            <tr>
+                <td class="right-text">Поручается</td>
+                <td class="left-text">
+                    <a  th:each="task : ${simpleDtoWorkPermit.taskList}" th:text="${task.getString()} + ' '"></a>
+                </td>
+            </tr>
+            <tr>
+                <td class="right-text">Отвественный руководитель работ</td>
+                <td class="left-text" th:text="${simpleDtoWorkPermit.responsible}"></td>
+            </tr>
+            <tr>
+                <td class="right-text">Допускающий</td>
+                <td class="left-text" th:text="${simpleDtoWorkPermit.admitting}"></td>
+            </tr>
+            <tr>
+                <td class="right-text">Производитель работ</td>
+                <td class="left-text" th:text="${simpleDtoWorkPermit.producer}"></td>
+            </tr>
+            <tr>
+                <td class="right-text">Наблюдающий</td>
+                <td class="left-text" th:text="${simpleDtoWorkPermit.observer}"></td>
+            </tr>
+            <tr>
+                <td class="right-text">Члены бригады</td>
+                <td class="left-text">
+                    <p  th:each="member : ${simpleDtoWorkPermit.members}" th:text="${member}"></p>
+                </td>
+            </tr>
+            <tr>
+                <td class="right-text">Водители</td>
+                <td class="left-text">
+                    <p  th:each="driver : ${simpleDtoWorkPermit.drivers}" th:text="${driver}"></p>
+                </td>
+            </tr>
+        </table>
+
+        <form th:method="GET" th:action="@{/work_permits/{id}/update(id=${simpleDtoWorkPermit.getId()})}">
+            <input type="submit" value="Редактировать" onclick="return confirmUpdate()">
+        </form>
+        <br/>
+        <form th:method="GET" th:action="@{/work_permits/create_on_base/{id}(id=${simpleDtoWorkPermit.getId()})}">
+            <input type="submit" value="Написать новый на основе">
+        </form>
+        <br/>
+        <form th:method="GET" th:action="@{/work_permits/{id}/download(id=${simpleDtoWorkPermit.getId()})}">
+            <input type="submit" value="Скачать">
+        </form>
+        <br/>
+        <div id="report">
+            <table>
+                <caption>
+                    Проделанная работа
+                </caption>
+                <tr>
+                    <th>Вид работы</th>
+                    <th>Количество</th>
+                    <th>Дата</th>
+                    <th></th>
+                </tr>
+                <tr th:each="reportEntry, itemStat : ${simpleDtoWorkPermit.reportEntries}">
+                    <td th:text="${reportEntry.getHistoricalPrice.getPrice().getName()}"></td>
+                    <td th:text="${reportEntry.getQuantity}"></td>
+                    <td th:text="${#temporals.format(reportEntry.date, 'dd.MM.yyyy')}"></td>
+                    <td>
+                        <button type="button" th:data-my="*{simpleDtoWorkPermit.reportEntries[__${itemStat.index}__].id}" onclick="confirmDeleteReport(this.getAttribute('data-my'))">
+                            Удалить
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            <form th:method="POST" th:action="@{/report/add/{id}(id=${simpleDtoWorkPermit.getId()})}">
+                <select th:field="*{dtoReport.priceId}">
+                    <option th:each="price : ${dtoPrices.getPriceList()}" th:value="${price.getId()}" th:text="${price.getName()}"></option>
+                </select>
+                <input type="number" th:field="*{dtoReport.quantity}" min="1"/>
+                <input type="date" th:field="*{dtoReport.date}">
+                <input type="submit" value="Добавить"/>
+                <div class="filedError" th:if="${#fields.hasErrors('dtoReport.date')}" th:errors="*{dtoReport.date}"></div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    function confirmDeleteWorkPermit() {
+        return confirm("Вы уверены, что хотите удалить этот Н/Д?");
+    }
+
+    function confirmUpdate() {
+        return confirm("Вы собираетесь изменить уже существующий Н/Д, а не создать новый, вы уверены?\
+                    Это повлияет на отчёт");
+    }
+
+    function confirmDeleteReport(index) {
+        if(confirm("Вы уверены, что хотите удалить?")){
+            removeReport(index)
+        }
+        return;
+    }
+    function removeReport(index) {
+        const url = 'http://localhost:8080/report/' + index + '/delete'
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        console.log(url)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(response => {
+                if(response.ok){
+                    location.reload();
+                }
+            });
+    }
+</script>
+</html>

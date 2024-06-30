@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Техника</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<br/>
+<div id="divMain">
+    <form th:method="POST" th:action="@{/technics/save_all}" th:object="${dto}">
+        <div id="technicsBlock">
+            <table id="technicsTable">
+                <caption>Список техники</caption>
+                <tr>
+                    <th>Наименование</th><th></th>
+                </tr>
+                <tr th:each="technic, itemStat : *{list}">
+                    <td style="display:none;"><input type="hidden" th:field="*{list[__${itemStat.index}__].id}"></td>
+                    <td><input type="text" th:field="*{list[__${itemStat.index}__].name}" size="60" style="border: none;"/></td>
+                    <td>
+                        <button type="button" th:data-my="*{list[__${itemStat.index}__].id}" onclick="confirmDelete(this.getAttribute('data-my'))">
+                            Удалить
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input type="submit" value="Сохранить изменения">
+    </form>
+    <br/>
+    <form th:method="POST" th:action="@{/technics}" th:object="${emptyTechnic}">
+        <label for="new_name">Введите название:</label>
+        <input id="new_name" type="text" th:field="*{name}" size="60"/>
+        <input type="submit" value="Добавить новую технику">
+    </form>
+</div>
+</body>
+<script>
+    function confirmDelete(index) {
+        if(confirm("Вы уверены, что хотите удалить?")){
+            removeTechnic(index)
+        }
+        return;
+    }
+    function removeTechnic(index) {
+        const url = 'http://localhost:8080/technics/' + index + '/delete'
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        console.log(url)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(response => {
+                if(response.ok){
+                    location.reload();
+                }
+            });
+    }
+</script>
+</html>

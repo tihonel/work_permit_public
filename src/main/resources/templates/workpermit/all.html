@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Все наряды</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" th:href="@{/css/pages.css}">
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<br/>
+<div id="divMain">
+    <form th:method="GET" th:action="@{/work_permits/create}">
+        <input type="submit" value="Создать новый наряд">
+    </form>
+    <table id="workPermitTable">
+        <colgroup>
+            <col span="1" style="width: 15%;">
+        </colgroup>
+        <caption>Наряды</caption>
+        <tr>
+            <th>Номер Н/Д</th>
+            <th>Поручается</th>
+            <th>
+        </tr>
+        <tr th:each="workpermit : ${listWP}">
+            <td th:text="${workpermit.number}"></td>
+            <td style="text-align: left">
+                <a th:each="task : ${workpermit.task}" th:text="${task.getString()} + ' '"></a>
+            </td>
+            <td>
+                <form th:method="GET" th:action="@{/work_permits/{id}(id=${workpermit.getId()})}">
+                    <input type="submit" value="Просмотр">
+                </form>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div class="pagination">
+        <span th:each="page, iterStat : ${dtoPages.pages}">
+            <a th:href="@{/work_permits(page=${page})}"
+            th:text="${page + 1}"
+            th:class="${page == dtoPages.currentPage} ? 'currentPage'"></a>
+        </span>
+    </div>
+</div>
+</body>
+</html>

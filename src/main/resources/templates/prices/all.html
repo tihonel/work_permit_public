@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Расценки</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<br/>
+<div id="divMain">
+
+    <form th:method="POST" th:action="@{/prices/save_all}" th:object="${dto}">
+        <div id="pricesBlock">
+            <table id="pricesTable">
+                <caption>Расценки</caption>
+                <tr>
+                    <th>Наименование работы</th>
+                    <th>Стоимость</th>
+                    <th>
+                </tr>
+                <tr th:each="price, itemStat : *{priceList}">
+                    <td style="display:none;"><input type="hidden" th:field="*{priceList[__${itemStat.index}__].id}">
+                    </td>
+                    <td>
+                      <a th:text="*{priceList[__${itemStat.index}__].name}"></a>
+                    </td>
+                    <td>
+                      <input th:field="*{priceList[__${itemStat.index}__].cost}" maxlength="6" size="6">
+                    </td>
+                    <td>
+                        <button type="button" th:data-my="*{priceList[__${itemStat.index}__].id}"
+                                onclick="return confirmDelete(this.getAttribute('data-my'))">
+                            Удалить
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input type="submit" value="Сохранить изменения">
+    </form>
+    <br/>
+    <form th:method="POST" th:action="@{/prices}" th:object="${emptyPrice}">
+        <div id="newPriceBlock">
+            <table id="newPriceTable" style="border: none">
+                <tr>
+                    <th>Наименование работы</th>
+                    <th>Стоимость</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input id="new_name" type="text" th:field="*{name}" size="60"/>
+                    </td>
+                    <td>
+                        <input id="new_value" type="text" th:field="*{cost}" size="6"/>
+                    </td>
+                </tr>
+            </table>
+            <input type="submit" value="Добавить новую">
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    function confirmDelete(index) {
+        if (confirm("Вы уверены, что хотите удалить?")) {
+            removePrice(index)
+            return true;
+        }
+        return false;
+    }
+
+    function removePrice(index) {
+        const url = 'http://localhost:8080/prices/' + index + '/delete'
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        console.log(url)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+    }
+</script>
+</html>

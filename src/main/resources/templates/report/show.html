@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет</title>
+  <link rel="stylesheet" th:href="@{/css/header.css}">
+  <link rel="stylesheet" th:href="@{/css/body.css}">
+</head>
+<body>
+  <div id="headerContainer" th:include="header.html"></div>
+  <br/>
+  <form th:method="POST" th:action="@{/report}">
+      <input th:field="*{dtoReportForTime.startDate}" type="date" >
+      <input th:field="*{dtoReportForTime.endDate}" type="date" >
+      <input type="submit" value="Сформировать и скачать отчёт">
+  </form>
+</body>
+</html>

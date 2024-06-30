@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Все сотрудники</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<br>
+<div id="divMain">
+    <table id="workersTable">
+        <caption>Сотрудники</caption>
+        <tr>
+            <th>Ф.И.О</th>
+            <th>Группа допуска</th>
+            <th></th>
+        </tr>
+        <tr th:each="worker : ${workers}">
+            <td th:text="${worker.getName()}"></td>
+            <td th:text="${worker.getAccessGroup()}"></td>
+            <td>
+                <form th:method="GET" th:action="@{/workers/{id}(id=${worker.getId()})}">
+                    <input type="submit" value="Просмотр">
+                </form>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <form th:method="GET" th:action="@{/workers/create}">
+        <input type="submit" value="Добавить нового сотрудника">
+    </form>
+</div>
+</body>
+</html>

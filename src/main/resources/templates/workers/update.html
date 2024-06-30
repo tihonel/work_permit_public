@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменение данных о работнике</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" th:href="@{/css/error.css}">
+    <style>
+        #checkBoxOperationalRightsLabel {
+            display: flex; /* Используем flex-контейнер */
+            align-items: center; /* Выравниваем элементы по вертикали */
+        }
+        #checkBoxRightIssuingLabel {
+            display: flex; /* Используем flex-контейнер */
+            align-items: center; /* Выравниваем элементы по вертикали */
+        }
+        #checkBoxDriverLabel {
+            display: flex; /* Используем flex-контейнер */
+            align-items: center; /* Выравниваем элементы по вертикали */
+        }
+        input[type="checkbox"] {
+            margin-left: 10px; /* Устанавливаем отступ справа в 0 */
+        }
+        h4 {
+            width: 100%;
+            align-items: center;
+        }
+        #container {
+            text-align: center; /* Выравнивание текста по центру */
+        }
+    </style>
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<div id="divMain">
+    <div id="container">
+        <h4>Изменение данных о сотруднике</h4>
+    </div>
+    <form th:method="POST" th:action="@{/workers/{id}(id=${worker.getId()})}" th:object="${worker}">
+        <label for="name">Введите фамилию, инициалы:</label>
+        <input type="text" id="name" th:field="*{name}" autocomplete="off" required/>
+        <div class="filedError" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        <br/>
+        <br/>
+        <label for="dative_name">Введите фамилию, инициалы в дательном падеже(кому?):</label>
+        <input type="text" id="dative_name" th:field="*{dativeName}" autocomplete="off" required/>
+        <div class="filedError" th:if="${#fields.hasErrors('dativeName')}" th:errors="*{dativeName}"></div>
+        <br/>
+        <br/>
+        <label for="access_group">Введите группу допуска(1-5):</label>
+        <input type="number" id="access_group" th:field="*{accessGroup}" required/>
+        <div class="filedError" th:if="${#fields.hasErrors('accessGroup')}" th:errors="*{accessGroup}"></div>
+        <br/>
+        <label for="checkBoxOperationalRights" id="checkBoxOperationalRightsLabel">Оперативные права
+            <input type="checkbox" th:field="${worker.operationalRights}" id="checkBoxOperationalRights"/>
+        </label>
+        <br/>
+        <label for="checkBoxRightIssuing" id="checkBoxRightIssuingLabel">Право выдачи
+            <input type="checkbox" th:field="${worker.rightIssuing}" id="checkBoxRightIssuing"/>
+        </label>
+        <div class="filedError" th:if="${#fields.hasErrors('rightIssuing')}" th:errors="*{rightIssuing}"></div>
+        <br/>
+        <label for="checkBoxDriver" id="checkBoxDriverLabel">Может быть водителем
+            <input type="checkbox" th:field="${worker.driver}"  id="checkBoxDriver"/>
+        </label>
+        <div class="filedError" th:if="${#fields.hasErrors('driver')}" th:errors="*{driver}"></div>
+        <br/>
+        <input type="submit" value="Сохранить изменения">
+    </form>
+</div>
+</body>
+</html>

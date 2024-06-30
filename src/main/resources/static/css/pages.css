@@ -1,0 +1,25 @@
+.pagination {
+    display: flex;
+    justify-content: center; /* Центрирует элементы внутри контейнера */
+    gap: 10px; /* Отступы между элементами */
+    padding: 10px 0; /* Отступы сверху и снизу */
+}
+
+.pagination a {
+    text-decoration: none; /* Убираем подчеркивание ссылок */
+    padding: 8px 16px; /* Внутренние отступы у ссылок */
+    border: 1px solid #ddd; /* Граница ссылок */
+    color: #007bff; /* Цвет текста ссылок */
+    border-radius: 4px; /* Закругленные углы */
+    transition: background-color 0.3s; /* Плавный переход фона */
+}
+
+.pagination a:hover {
+    background-color: #e9ecef; /* Фон при наведении */
+}
+
+.pagination a.currentPage {
+    background-color: #007bff; /* Фон активной страницы */
+    color: white; /* Цвет текста активной страницы */
+    border-color: #007bff; /* Цвет границы активной страницы */
+}

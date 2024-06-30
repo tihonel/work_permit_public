@@ -1,0 +1,27 @@
+table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+table caption {
+    font-family: 'Times New Roman',sans-serif;
+    font-size: 12pt;
+    font-weight: bold;
+}
+table th {
+    font-weight: bold;
+    padding: 5px;
+    background: #efefef;
+    border: 1px solid #dddddd;
+}
+table td {
+    border: 1px solid #dddddd;
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+}
+input[type="checkbox"] {
+    margin: auto; /* Установка автоматичесных отступов по всем сторонам, чтобы элемент находился по центру ячейки */
+    display: block; /* Преобразование флажка в блочный элемент для применения margin: auto */
+    transform: scale(1.3);
+}

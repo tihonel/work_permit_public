@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Новый наряд</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" th:href="@{/css/error.css}">
+    <link rel="stylesheet" href="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.css">
+    <style>
+        .measuresInputClass {
+            font-family: 'Times New Roman',sans-serif;
+            font-size: 10pt;
+            width: 100%;
+        }
+        input[type="text"] {
+            font-family: 'Times New Roman',sans-serif;
+            font-size: 10pt;
+        }
+        .input-error {
+            border: 2px solid red; /* Цвет рамки для поля с ошибкой */
+        }
+        .task{
+            font-family: 'Times New Roman',sans-serif;
+            font-size: 10pt;
+            width: 700px;
+            height: 50px;
+            resize: none;
+            wrap-option: hard;
+        }
+        .instructions{
+            font-family: 'Times New Roman',sans-serif;
+            font-size: 10pt;
+            width: 700px;
+            height: 70px;
+            resize: none;
+            wrap-option: hard;
+        }
+        #numberBlock{
+            width: 150px;
+
+            margin:0 auto;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="headerContainer" th:include="header.html"></div>
+<br/>
+<div id = "divMain">
+  <form th:method="POST" th:action="@{/work_permits}" th:object="${dtoWorkPermit}" id="mainForm">
+      <div class="filedError" th:if="${#fields.hasErrors('global')}">
+          <h4>Ошибки в наряде:</h4>
+          <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"/>
+      </div>
+      <div id="numberBlock">
+      <label for="number">Номер Н/Д</label>
+      <input type="text" id="number" th:field="*{number}" maxlength="5" size="5"/>
+          <div class="filedError" th:if="${#fields.hasErrors('number')}" th:errors="*{number}"></div>
+      </div>
+      <br/>
+      <label for="responsible">Отвественный руководель работ</label>
+      <select th:field="${dtoWorkPermit.responsible}" id="responsible">
+          <option th:each="responsible : ${responsibleList}" th:value="${responsible.getId()}" th:text="${responsible.getName()}"></option>
+      </select>
+      <label for="admitting">Допускающий</label>
+      <select th:field="${dtoWorkPermit.admitting}" id="admitting">
+          <option th:each="admitting : ${admittingList}" th:value="${admitting.getId()}" th:text="${admitting.getName()}"></option>
+      </select>
+      <br/>
+      <label for="producer">Производитель работ</label>
+      <select th:field="${dtoWorkPermit.producer}" id="producer">
+          <option th:each="producer : ${producerList}" th:value="${producer.getId()}" th:text="${producer.getName()}"></option>
+      </select>
+      <label for="observer">Наблюдающий</label>
+      <select th:field="${dtoWorkPermit.observer}" id="observer">
+          <option th:each="observer : ${observerList}" th:value="${observer.getId()}" th:text="${observer.getName()}"></option>
+      </select>
+      <br/>
+      <br/>
+      <div id="membersBlock">
+      <table id="membersTable">
+          <caption>Члены бригады</caption>
+          <tr>
+              <th>Ф.И.О</th><th>Группа допуска</th><th>Выбрать</th><th>Водитель</th>
+          </tr>
+          <tr th:each="member : ${members}">
+              <td th:text="${member.getName()}"></td><td th:text="${member.getAccessGroup()}"></td>
+              <td><input type="checkbox" th:value="${member.id}" th:field="${dtoWorkPermit.brigadeMembers}"/></td>
+              <td><input th:if="${member.driver}" type="checkbox" th:value="${member.id}" th:field="${dtoWorkPermit.drivers}" id="checkBox2"/></td>
+          </tr>
+      </table>
+      </div>
+      <br/>
+      <div id="technicsBlock">
+      <table id="technicsTable">
+          <caption>Техника</caption>
+          <tr>
+              <th>Наименование</th><th>Выбрать</th>
+          </tr>
+          <tr th:each="tecnic : ${technicsList}">
+              <td th:text="${tecnic.getName()}"></td>
+              <td><input type="checkbox" th:value="${tecnic.id}" th:field="${dtoWorkPermit.technicsList}"/></td>
+          </tr>
+      </table>
+      </div>
+      <br/>
+      <label for="startDateTime">Работу начать: </label>
+      <input type="text" id="startDateTime" placeholder="Выберите дату и время" th:field="*{startDateTime}">
+      <div class="filedError" th:if="${#fields.hasErrors('startDateTime')}" th:errors="*{startDateTime}"></div>
+      <br/>
+      <label for="endDateTime">Работу закончить: </label>
+      <input type="text" id="endDateTime" placeholder="Выберите дату и время" th:field="*{endDateTime}">
+      <div class="filedError" th:if="${#fields.hasErrors('endDateTime')}" th:errors="*{endDateTime}"></div>
+      <br/>
+      <br/>
+      <label for="task">Поручается</label>
+      <br/>
+      <textarea id="task" class="task"  th:field="${dtoWorkPermit.task}"></textarea>
+      <br/>
+      <label>Краткое название объекта:</label>
+      <input type="text" th:field="${dtoWorkPermit.shortName}"/>
+      <div class="filedError" th:if="${#fields.hasErrors('shortName')}" th:errors="*{shortName}"></div>
+      <br/>
+      <div class="measuresInputClass">
+          <div class="filedError" th:if="${#fields.hasErrors('measures')}" th:errors="*{measures}"></div>
+      <table id="measuresInput">
+          <caption>Мероприятия по подготовке рабочих мест</caption>
+          <tr>
+              <th>
+                  Наименование электроустановок,<br/>
+                  в которых нужно провести<br/>
+                  отключения и установить<br/>
+                  заземления
+              </th>
+              <th>
+                  Что должно быть отключено и где заземлено
+              </th>
+              <th>
+                  Что должно быть<br/>
+                  изолировано<br/>
+                  (ограждено)
+              </th>
+          </tr>
+          <tr th:each="measure, itemStat : *{measures}">
+              <td><input type="text" th:field="*{measures[__${itemStat.index}__].firstColumn}" style="width: 200px;" class="col-first"/></td>
+              <td><input type="text" th:field="*{measures[__${itemStat.index}__].secondColumn}" style="width: 390px;" class="col-second"/></td>
+              <td><input type="text" th:field="*{measures[__${itemStat.index}__].thirdColumn}" style="width: 114px;" class="col-third"/></td>
+          </tr>
+      </table>
+      </div>
+<!--      <button type="button" onclick="addRow()">-->
+<!--          Добавить строку-->
+<!--      </button>-->
+      <br/>
+      <br/>
+      <label for="instructions">Отдельные указания</label>
+      <br/>
+      <textarea id="instructions" class="instructions"  th:field="${dtoWorkPermit.instructions}"></textarea>
+      <br/>
+      <br/>
+      <div>
+      <label for="issuingDateTime">Выдан: </label>
+      <input type="text" id="issuingDateTime" placeholder="Выберите дату и время" th:field="*{issuingDateTime}">
+      </div>
+      <div class="filedError" th:if="${#fields.hasErrors('issuingDateTime')}" th:errors="*{issuingDateTime}"></div>
+      <label for="issuing">Выдающий</label>
+      <select th:field="${dtoWorkPermit.issuing}" id="issuing">
+          <option th:each="issuing : ${issuingList}" th:value="${issuing.getId()}" th:text="${issuing.getName()}"></option>
+      </select>
+      <br/>
+      <br/>
+      <input id="submitButton" type="submit" value="Создать">
+  </form>
+</div>
+</body>
+<script th:src="@{/js/membersCheckboxes.js}"></script>
+<script th:src="@{/js/inputLimitationTask.js}"></script>
+<script th:src="@{/js/inputLimitationInstruction.js}"></script>
+<script th:src="@{/js/addRowAndInputLimitationMeasureTable.js}"></script>
+<!--дата-->
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
+<script th:src="@{/js/dateAndTimeInput.js}"></script>
+</html>
